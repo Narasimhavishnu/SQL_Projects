@@ -1,0 +1,41 @@
+Operation Analytics and Investigating Metric Spike
+
+PROJECT​ 
+Operation Analytics is the analysis done for the complete end to end operations of a company.
+With the help of this, the company then finds the areas on which it must improve upon.​
+Here we work closely with the operations team, support team, marketing team, etc and help them derive insights out of the data they collect.​
+
+JOBS REVIEWED PER DAY AND HOUR​
+
+SELECT DS, COUNT(JOB_ ID) AS JOBS_ PER_ DAY, SUM(TIME_ SPENT)/3600 AS HOURS_ SPENT ​
+FROM MS _ DATA
+WHERE DS >='2020-11-01'  AND DS <='2020-11-30'  ​
+GROUP BY DS ;​
+
+CALCULATE 7 DAY ROLLING AVERAGE OF THROUGHPUT? FOR THROUGHPUT, DO YOU PREFER DAILY METRIC OR 7-DAY ROLLING AND WHY?​
+THROUGHPUT MEASURES HOW MANY UNITS OF INFORMATION A SYSTEM CAN PROCESS IN A PERIOD OF TIME​
+
+
+WITH CTE AS ( SELECT DS, COUNT(JOB_ID) AS NUM_JOBS, SUM(TIME_SPENT) AS TOTAL_TIME ​
+FROM MS_DATA​
+WHERE DS BETWEEN '2020-11-01' AND '2020-11-30' GROUP BY DS  )​
+SELECT DS, ROUND(1.0*SUM(NUM_JOBS)​
+OVER (ORDER BY DS ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) / SUM(TOTAL_TIME)​
+OVER (ORDER BY DS ROWS BETWEEN 6 PRECEDING AND CURRENT ROW),2) AS THROUGHPUT_7D FROM CTE​
+
+SHARE OF EACH LANGUAGE FOR DIFFERENT CONTENTS FOR LAST 30 DAYS.​
+
+select sub.* ,cat*100 /8 as perentage from (SELECT language,count(*) as cat,max(ds) FROM ms_ data group by language limit 30)sub group by language;
+
+Here I used subquery and took count of individual languages ,and find max date and limit it 30 so we get last 30 days.
+now calculate the count into percentage in main query cat*100/total no of languages
+
+DUPLICATE ROWS​
+
+SELECT ds,job_id,actor_id,event,language,time_spent,org, COUNT(*) AS QTY​
+FROM ms_data​
+GROUP BY ds,job_id,actor_id,event,language,time_spent,org HAVING COUNT(*)>1;​
+
+There are no duplicate rows in table .if we check the individual columns then we can see duplicates
+.if want to show only duplicates just count he column you want to find duplicates  then use where count(*)>1 
+then you can find duplicates of that particular column.​
